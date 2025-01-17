@@ -1,4 +1,4 @@
-const { db, cloudinary } = require('../config/db.config');
+const db = require('../config/db.config');
 const fs = require('fs').promises;
 const path = require('path');
 const { logActivity } = require('./activity.controller');
@@ -55,32 +55,15 @@ const updateAvatar = async (req, res) => {
             });
         }
 
-        // Upload to Cloudinary
-        const result = await new Promise((resolve, reject) => {
-            const stream = cloudinary.uploader.upload_stream(
-                { 
-                    folder: "avatars",
-                    transformation: [
-                        { width: 400, height: 400, crop: "fill" }
-                    ]
-                },
-                (error, result) => {
-                    if (error) reject(error);
-                    else resolve(result);
-                }
-            );
-            
-            stream.end(req.file.buffer);
-        });
+        const avatarUrl = `/uploads/avatars/${req.file.filename}`;
 
-        const avatarUrl = result.secure_url;
-
-        // Cập nhật URL trong database
+        // Cập nhật avatar mới
         await db.query(
             'UPDATE users SET avatar_url = ? WHERE id = ?',
             [avatarUrl, userId]
         );
 
+        // Lấy thông tin user mới nhất
         const [updatedUser] = await db.query(
             'SELECT id, email, phone, full_name, role, avatar_url, created_at FROM users WHERE id = ?',
             [userId]
@@ -98,7 +81,7 @@ const updateAvatar = async (req, res) => {
             message: 'Cập nhật avatar thành công',
             data: {
                 avatar_url: avatarUrl,
-                user: updatedUser[0]
+                user: updatedUser[0] // Trả về toàn bộ thông tin user
             }
         });
     } catch (error) {
@@ -109,6 +92,7 @@ const updateAvatar = async (req, res) => {
         });
     }
 };
+
 // Cập nhật thông tin profile
 const updateProfile = async (req, res) => {
     try {
