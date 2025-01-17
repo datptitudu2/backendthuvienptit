@@ -1,15 +1,7 @@
 const multer = require('multer');
-const path = require('path');
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, '../public/uploads/avatars'));
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'avatar-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+// Chuyển sang memory storage để upload lên Cloudinary
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image/')) {
@@ -27,4 +19,4 @@ const uploadAvatar = multer({
   fileFilter: fileFilter
 });
 
-module.exports = uploadAvatar; 
+module.exports = uploadAvatar;

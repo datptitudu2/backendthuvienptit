@@ -1,4 +1,12 @@
 const mysql = require('mysql2');
+const cloudinary = require('cloudinary').v2;
+
+// Cấu hình Cloudinary
+cloudinary.config({ 
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+    api_key: process.env.CLOUDINARY_API_KEY, 
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
@@ -22,4 +30,7 @@ pool.on('error', (err) => {
 
 const promisePool = pool.promise();
 
-module.exports = promisePool;
+module.exports = {
+    db: promisePool,
+    cloudinary
+};
