@@ -10,14 +10,7 @@ const pool = mysql.createPool({
     queueLimit: 0,
     enableKeepAlive: true,
     keepAliveInitialDelay: 0,
-    connectTimeout: 10000,
-    acquireTimeout: 10000,
-    timeout: 10000,
-    reconnect: true,
-    pool: {
-        min: 0,
-        max: 20
-    }
+    connectTimeout: 10000
 });
 
 pool.on('error', (err) => {
@@ -29,4 +22,4 @@ pool.on('error', (err) => {
 
 const promisePool = pool.promise();
 
-module.exports = promisePool; 
+module.exports = promisePool;
